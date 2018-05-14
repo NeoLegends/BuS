@@ -24,20 +24,41 @@ bool is_empty(stud_type** liste) {
 void enqueue(stud_type** studenten_liste, int matnum, char vorname[20], char nachname[20])
 {
     /* Deklariere benötigte Variablen */
+    /* nein */
 
     /* Hol Speicher auf dem Heap an für den neuen Listen Eintrag */
+    stud_type* type = malloc(sizeof(stud_type));
 
     /* Befüll den Speicher */
+    type->matnum = matnum;
+    type->next_student = 0;
+    type->next_student = NULL;
+
+    strcpy(type->vorname, vorname);
+    strcpy(type->nachname, nachname);
 
     /* Füg den neuen Eintrag in die Liste ein */
     /* Ist die Liste leer ? */
     /* Sortier den Studenten aufsteigend nach Matrikelnummer ein */
+
+    if (is_empty(studenten_liste)) {
+        *studenten_liste = type;
+    } else {
+        stud_type *curr = *studenten_liste;
+        while (curr->next_student != NULL && curr->matnum < matnum) {
+            curr = curr->next_student;
+        }
+
+        stud_type *next = curr->next_student;
+        type->next_student = next;
+        curr->next_student = type;
+    }
 }
 
 /* Löschen eines Elementes.
  *
  * Bekommt einen Zeiger auf einen Zeiger der auf das 1. Element der Liste zeigt
- * Bekommt die MatNr des Studenten der zu l�schen ist
+ * Bekommt die MatNr des Studenten der zu löschen ist
  *
  * Gibt 0 für einen Fehler zurück
  * Gibt 1 für Erfolg zurück
@@ -45,17 +66,26 @@ void enqueue(stud_type** studenten_liste, int matnum, char vorname[20], char nac
 int dequeue(stud_type** studenten_liste, int matnum)
 {
     /* Deklariere benötigte Variablen */
+    /* nein */
 
     /* Prüfe Randbedingungen */
+    /* gibt keine */
 
-    /* Finde den Studenten */
+    /* Speichere *Adresse* zum Pointer, der das Element hält */
+    stud_type** cur = studenten_liste;
+    while (*cur != NULL && (*cur)->matnum != matnum) {
+        cur = &(*cur)->next_student;
+    }
 
-    /* Lösche den Studenten und gibt den Speicher frei */
+    if (*cur == NULL) {
+        return 0; // nicht gefunden
+    }
 
-    /* Was muss passieren wenn das 1. Element gelöscht wird? */
-    /* Was ist wenn es nicht in der Liste ist? */
-    /* ... */
+    /* Und raus damit. */
+    free(*cur);
+    *cur = (*cur)->next_student;
 
+    return 1;
 }
 
 /* Auslesen eines Elementes
