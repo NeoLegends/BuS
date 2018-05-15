@@ -116,6 +116,44 @@ int get_student(stud_type* studenten_liste, int matnum, char vorname[20], char n
    }
 }
 
+typedef struct sorted_list_ {
+    stud_type* element;
+    struct sorted_list_* next;
+} sorted_list;
+
+void insert_sorted(sorted_list** head, sorted_list* el, int (*comparator)(stud_type* a, stud_type* b)) {
+    while ((*head) != NULL && comparator((*head)->element, el->element) < 0) {
+        head = &(*head)->next;
+    }
+
+    el->next = *head;
+    *head = el;
+}
+
+sorted_list* sortier_liste(stud_type** list, int (*comparator)(stud_type* a, stud_type* b)) {
+    // O(n^2) but fuck it
+
+    sorted_list* result = NULL;
+    stud_type* cur = *list;
+    while (cur != NULL) {
+        sorted_list* el = malloc(sizeof(sorted_list));
+        el->element = cur;
+        el->next = NULL;
+        insert_sorted(&result, el, comparator);
+
+        cur = cur->next_student;
+    }
+
+    return result;
+}
+
+int compare_name(stud_type* a, stud_type* b) {
+    return strcmp(a->nachname, b->nachname);
+}
+
+int compare_surname(stud_type* a, stud_type* b) {
+    return strcmp(a->vorname, b->vorname);
+}
 
 /* Test der Listenfunktionen  */
 int main(void)
@@ -191,6 +229,22 @@ int main(void)
     while(curr != NULL) {
         printf("    Matrikelnummer %4i: %s %s\n", curr->matnum, curr->vorname, curr->nachname);
         curr = curr->next_student;
+    }
+
+    sorted_list* sorted = sortier_liste(&studenten_liste, compare_name);
+    printf(">>> Nach Nachname sortiert...\n");
+    while (sorted != NULL) {
+        stud_type* el = sorted->element;
+        printf("    Matrikelnr %4i %s %s\n", el->matnum, el->vorname, el->nachname);
+        sorted = sorted->next;
+    }
+
+    sorted_list* sorted2 = sortier_liste(&studenten_liste, compare_surname);
+    printf(">>> Nach Vorname sortiert...\n");
+    while (sorted2 != NULL) {
+        stud_type* el = sorted2->element;
+        printf("    Matrikelnr %4i %s %s\n", el->matnum, el->vorname, el->nachname);
+        sorted2 = sorted2->next;
     }
 
     return 0;
