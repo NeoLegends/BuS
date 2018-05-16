@@ -9,6 +9,14 @@ void child_A_proc()
   }
 }
 
+void child_B_proc()
+{
+  while (1) {
+    fprintf(stdout, "%s", "C");
+    fflush(stdout);
+  }
+}
+
 void parent_proc()
 {
   while (1) {
@@ -19,12 +27,19 @@ void parent_proc()
 int main(void)
 {
   int child_A;
+  int child_B;
 
-  child_A = fork();                 /* neuen Prozess starten                          */
-  if (child_A == 0)                 /* Bin ich der Sohnprozess?                       */
-    child_A_proc();                 /* ... dann child-Funktion ausfuehren             */
-  else
+  child_A = fork();  
+  child_B = fork();               /* neuen Prozess starten                          */
+  if (child_A == 0){
+    child_A_proc();
+  }                 /* Bin ich der Sohnprozess?                       */
+    
+  if(child_B == 0){
+    child_B_proc();
+  }                 /* ... dann child-Funktion ausfuehren             */
+  else{
     parent_proc();                  /* ... sonst parent-Funktion ausfuehren           */
-
+  }
   return 0;
 }
